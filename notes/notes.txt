@@ -1,0 +1,79 @@
+
+Actors are participating in a game.
+The simulation progresses forwards in rounds.
+Every round the actor can perform at most one action.
+Actors can choose to not make an action.
+An actor can attempt to make an action in a round, but this can fail.
+The actor commits to a specific action in a specific round, this prevents an action intended for one round from occurring in a subsequent round.
+When there are multiple actors, each one can perform at most one action per round.
+Each actor is a state machine, where only valid state transitions are possible.
+
+
+For each round
+	For every available state transform
+		The action can succeed, or fail for unspecified reasons.
+
+The history of each actors state transitions are recorded for later analysis.
+
+There can be multiple types of actors, or different types of state machines.
+
+Entities can either be active (where they can initiate a state transition),
+or passive where they can only be interracted with (e.g. they carry state).
+Each type of state machine is specified up-front and cannot be changed.
+
+Each state machine can have properties, these are arbitrary and can be for example:
+
+	* a reference to a specific type of state machine with specific properties
+	* integers
+	* booleans
+	* symbols
+
+Each property has a unique name, across all types of state machines, with an 
+associated type. Predicates or conditions on these properties are comparisons
+or other operations which evaluate to True or False. Types of comparisons are:
+
+	* direct equality or inequality
+	* range
+	* arithmetic expressions and comparisons to them
+	* logic and/or
+
+Every state transform is modelled as a statement which matches the actor and 
+the targets state using predicates or conditions on its properties. It then 
+applies a transformation to both the actor and the target, this specifies
+the result of the transform and puts them both into a their new states (which may
+be the same as they were previously).
+
+For the state transform to occur all conditions must evaluate to True.
+
+These transforms are specified as, for example:
+
+	From:
+		Cond:
+			state = 'START'
+			propertyA = 8
+		Transform:
+			state = 'STOP'
+	To:
+		Cond:
+			propertyB = 9
+		Transform:
+			propertyB = 10
+
+However, if there are two actors of the same type and one passive state machine,
+each actor has two available state transitions which interract with the passive
+state machine. For example:
+
+	Actor can (Alice):
+		Kill
+		Increment
+		Decrement
+
+	Passive state machine (Bob) can
+		Be killed
+		Be incremented
+		Be decremented
+
+	But there are conditions on the transitions such that:
+		If Alice previously incremented, its next step must be decrement and visa versa
+		If Bob has been incremented three times in a row it must be decremented.
+		

@@ -1,0 +1,1 @@
+-e git://github.com/HarryR/pampy.git#egg=pampy

@@ -1,0 +1,9 @@
+
+
+Interdependence.
+ - When one field changes, what is its relation to the state of the other variables
+ - When two fields change together, what is the probability that when one changes the other will
+
+End-game probabilities
+ - When no more state transitions are possible, this is a terminal state
+ - What is the probability of any field being a specific value in the terminal states
