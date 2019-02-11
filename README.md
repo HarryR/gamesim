@@ -108,8 +108,8 @@ rules = System(
     Group(
         Selector(Player(ANY), Player(ANY)),
         Rules(
-            lambda x: ([Player(State.FLIP), Player(State.FLIP)],
-                       [x.transform(State.FLAP), x.transform(State.FLOP)])
+            lambda x, y: ([Player(State.FLIP), Player(State.FLIP)],
+                       [x.transform(State.FLAP), y.transform(State.FLOP)])
         )
     )
 )
