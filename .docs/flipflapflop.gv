@@ -1,0 +1,8 @@
+digraph G {
+    
+ START -> FLIP;
+ FLIP -> FLAP;
+ FLAP -> FLOP;
+ FLOP -> FLIP;
+
+}

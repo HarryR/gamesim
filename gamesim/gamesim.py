@@ -1,5 +1,55 @@
+from dataclasses import dataclass
 from copy import deepcopy, copy
+from typing import List
 from pampy import match, ANY
+
+
+class System(object):
+	def __init__(self, *groups):
+		self.groups = groups
+
+	def __iter__(self):
+		return iter(self.groups)
+
+	def __len__(self):
+		return len(self.groups)
+
+
+class Rules(object):
+	def __init__(self, *rules):
+		self.rules = rules
+
+	def __iter__(self):
+		return iter(self.rules)
+
+	def __len__(self):
+		return len(self.rules)
+
+
+class Selector(object):
+	def __init__(self, *selectors):
+		self.selectors = selectors
+
+	def __iter__(self):
+		return iter(self.selectors)
+
+	def __len__(self):
+		return len(self.selectors)
+
+
+@dataclass
+class Group:
+	selector: Selector
+	rules: Rules
+
+	def __iter__(self):
+		return iter((self.selector, self.rules))
+
+
+@dataclass
+class Rule:
+	matchers: List
+	actions: List
 
 
 def yield_permuations(sub_items, path=None):
@@ -61,7 +111,11 @@ def simulate(objects, system, history=None, stochastic=None):
 				replacement = list()
 				for i, t_i in enumerate(transforms):
 					o_i = deepcopy(p[i])
-					replacement.append(t_i(o_i))
+					if t_i:
+						# If a transform is specified, apply it
+						replacement.append(t_i(o_i))
+					else:
+						replacement.append(o_i)
 
 				# Create a new object list with the result of the state transform applied
 				new_objects = copy(objects)

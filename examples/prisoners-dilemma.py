@@ -1,6 +1,8 @@
 from enum import Enum
 from dataclasses import dataclass
-from gamesim import simulation
+from pampy import ANY
+import gamesim as gs
+
 
 class Judgement(Enum):
 	WAITING_EITHER = 0
@@ -96,35 +98,38 @@ def main():
 
 	# TODO: add exclusions to remove pairs which shouldn't be worked on
 	# e.g. to exclude where `from` and `to` are identical
-	system = [
-		[[Prisoner(ANY, ANY, ANY), Judge(ANY, ANY, ANY, ANY)], [
-			lambda a, b: ((Prisoner(ANY),
-						   Judge(Judgement.WAITING_EITHER, ANY, ANY, ANY, ANY)),
-						  (lambda x: x.transform(Choice.COOPERATE), lambda x: x.transform(a, Choice.COOPERATE))),
+	system = gs.System(
+		gs.Group(
+			gs.Selector(Prisoner(ANY, ANY, ANY), Judge(ANY, ANY, ANY, ANY)),
+			gs.Rules(
+				lambda a, b: ((Prisoner(ANY),
+							   Judge(Judgement.WAITING_EITHER, ANY, ANY, ANY, ANY)),
+							  (lambda x: x.transform(Choice.COOPERATE), lambda x: x.transform(a, Choice.COOPERATE))),
 
-			lambda a, b: ((Prisoner(Name.ALICE),
-						   Judge(Judgement.WAITING_ALICE, ANY, ANY, ANY, ANY)),
-						  (lambda x: x.transform(Choice.COOPERATE), lambda x: x.transform(a, Choice.COOPERATE))),
+				lambda a, b: ((Prisoner(Name.ALICE),
+							   Judge(Judgement.WAITING_ALICE, ANY, ANY, ANY, ANY)),
+							  (lambda x: x.transform(Choice.COOPERATE), lambda x: x.transform(a, Choice.COOPERATE))),
 
-			lambda a, b: ((Prisoner(Name.BOB),
-			  			   Judge(Judgement.WAITING_BOB, ANY, ANY, ANY, ANY)),
-			 			  (lambda x: x.transform(Choice.COOPERATE), lambda x: x.transform(a, Choice.COOPERATE))),
+				lambda a, b: ((Prisoner(Name.BOB),
+				  			   Judge(Judgement.WAITING_BOB, ANY, ANY, ANY, ANY)),
+				 			  (lambda x: x.transform(Choice.COOPERATE), lambda x: x.transform(a, Choice.COOPERATE))),
 
-			lambda a, b: ((Prisoner(ANY),
-			  			   Judge(Judgement.WAITING_EITHER, ANY, ANY, ANY, ANY)),
-			 			  (lambda x: x.transform(Choice.DEFECT), lambda x: x.transform(a, Choice.DEFECT))),
+				lambda a, b: ((Prisoner(ANY),
+				  			   Judge(Judgement.WAITING_EITHER, ANY, ANY, ANY, ANY)),
+				 			  (lambda x: x.transform(Choice.DEFECT), lambda x: x.transform(a, Choice.DEFECT))),
 
-			lambda a, b: ((Prisoner(Name.ALICE),
-			  			   Judge(Judgement.WAITING_ALICE, ANY, ANY, ANY, ANY)),
-			 			  (lambda x: x.transform(Choice.DEFECT), lambda x: x.transform(a, Choice.DEFECT))),
+				lambda a, b: ((Prisoner(Name.ALICE),
+				  			   Judge(Judgement.WAITING_ALICE, ANY, ANY, ANY, ANY)),
+				 			  (lambda x: x.transform(Choice.DEFECT), lambda x: x.transform(a, Choice.DEFECT))),
 
-			lambda a, b: ((Prisoner(Name.BOB),
-			  			   Judge(Judgement.WAITING_BOB, ANY, ANY, ANY, ANY)),
-			 			  (lambda x: x.transform(Choice.DEFECT), lambda x: x.transform(a, Choice.DEFECT)))
-		]]
-	]
+				lambda a, b: ((Prisoner(Name.BOB),
+				  			   Judge(Judgement.WAITING_BOB, ANY, ANY, ANY, ANY)),
+				 			  (lambda x: x.transform(Choice.DEFECT), lambda x: x.transform(a, Choice.DEFECT)))
+			)
+		)
+	)
 
-	for objs, hist in simulation(objects, system, all_orderings=True):
+	for objs, hist in gs.simulation(objects, system):
 		print(objs)
 		print(hist)
 		print()
