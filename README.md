@@ -94,3 +94,25 @@ rules = System(
 A visual representation of this system is:
 
 ![FLIP FLAP FLOP](.docs/flipflapflop.png)
+
+
+## More Complicated Games
+
+The Flip-Flap-Flop game above can be extended to support multiple players, with the rules above the state of the two players will never diverge - they will continue forever and will always be in the same state as each other. However, we can add an extra rule which matches them both after the initial transform from `START` to `FLIP` and sets them on divergent paths.
+
+```python
+objects = [Player(), Player()]
+
+rules = System(
+    # Include previous group here...
+    Group(
+        Selector(Player(ANY), Player(ANY)),
+        Rules(
+            lambda x: ([Player(State.FLIP), Player(State.FLIP)],
+                       [x.transform(State.FLAP), x.transform(State.FLOP)])
+        )
+    )
+)
+```
+
+By adding the extra rule this creates a divergent universe every time any two players are in the `FLIP` state, but because in the divergent universe no two players will be in the same state this limits its growth.
