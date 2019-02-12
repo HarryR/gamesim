@@ -155,12 +155,4 @@ Rules(
 )
 ```
 
-or
-
-```python
-Rules(
-    lambda x: ([...], [x.transform])
-)
-```
-
 If the function returns `None` the same object will be emitted (after the transform is applied).

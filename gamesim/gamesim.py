@@ -130,6 +130,14 @@ def simulate(objects, system, history, stochastic=None):
                 yield new_objects, new_history, cycle
 
 
+@dataclass
+class Cycle:
+    """
+    Represents a cyclic repeating pattern
+    """
+    history: List
+
+
 class HistoryTracker(object):
     def __init__(self):
         self.history = list()
@@ -143,7 +151,7 @@ class HistoryTracker(object):
         # Object state has been found in history
         cycle = None
         if i is not None:
-            cycle = self.history[:i][::-1]
+            cycle = Cycle(self.history[:i][::-1])
 
         # Prepend objects to list, this keeps list in reverse order (FILO)
         self.history.insert(0, objects)
@@ -153,10 +161,12 @@ class HistoryTracker(object):
 
 def simulation(objects, system, history=None, stochastic=False):
     for new_objects, new_history, cycle in simulate(objects, system, history, stochastic):
-        yield new_objects, new_history
-
         if cycle:
+            # We have detected a cycle, don't emit this one
+            # And don't continue to run a recursive simulation
             continue
+
+        yield new_objects, new_history
 
         yield from simulation(new_objects, system, new_history, stochastic)
 
