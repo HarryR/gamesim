@@ -22,6 +22,8 @@ Matching is performed with [Pampy](https://github.com/santinic/pampy/), a Python
 
 ## Writing Rules
 
+You can skip this tutorial and jump straight to the example: [flipflapflop.py](examples/flipflapflop.py)
+
 Rules operate on one or more objects, each object is an instance of a Python `dataclass`, for example:
 
 ```python
@@ -40,6 +42,7 @@ class Player:
 
     def transform(self, new_state):
         self.state = new_state
+        return self
 ```
 
 Each object has functions to manipulate its state, these will be called by the rules later, in this case there's a single function called `transform` which changes the state.
@@ -82,10 +85,10 @@ rules = System(
     Group(
         Selector(Player(ANY)),
         Rules(
-            lambda x: ([Player(State.START)], [x.transform(State.FLIP)]),
-            lambda x: ([Player(State.FLIP)], [x.transform(State.FLAP)]),
-            lambda x: ([Player(State.FLAP)], [x.transform(State.FLOP)]),
-            lambda x: ([Player(State.FLOP)], [x.transform(State.FLIP)]),
+            lambda x: ([Player(State.START)], [lambda o: o.transform(State.FLIP)]),
+            lambda x: ([Player(State.FLIP)], [lambda o: o.transform(State.FLAP)]),
+            lambda x: ([Player(State.FLAP)], [lambda o: o.transform(State.FLOP)]),
+            lambda x: ([Player(State.FLOP)], [lambda o: o.transform(State.FLIP)]),
         )
     )
 )
@@ -104,12 +107,14 @@ The Flip-Flap-Flop game above can be extended to support multiple players, with 
 objects = [Player(), Player()]
 
 rules = System(
-    # Include previous group here...
+    Group(
+        # Include previous rules and selector here
+    ),
     Group(
         Selector(Player(ANY), Player(ANY)),
         Rules(
             lambda x, y: ([Player(State.FLIP), Player(State.FLIP)],
-                       [x.transform(State.FLAP), y.transform(State.FLOP)])
+                          [lambda o: o.transform(State.FLAP), lambda o: o.transform(State.FLOP)])
         )
     )
 )
