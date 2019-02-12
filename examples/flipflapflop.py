@@ -10,6 +10,7 @@ class State(Enum):
     FLOP = 2
     FLAP = 3
 
+
 @dataclass
 class Player:
     state: State = State.START
@@ -20,32 +21,31 @@ class Player:
 
 
 def main():
-	objects = [Player(), Player()]
+    objects = [Player(), Player()]
 
-	rules = System(
-	    Group(
-	        Selector(Player(ANY)),
-	        Rules(
-	            lambda x: ([Player(State.START)], [lambda o: o.transform(State.FLIP)]),
-	            lambda x: ([Player(State.FLIP)], [lambda o: x.transform(State.FLAP)]),
-	            lambda x: ([Player(State.FLAP)], [lambda o: x.transform(State.FLOP)]),
-	            lambda x: ([Player(State.FLOP)], [lambda o: x.transform(State.FLIP)]),
-	        )
-	    ),
-	    Group(
-	        Selector(Player(ANY), Player(ANY)),
-	        Rules(
-	            lambda x, y: ([Player(State.FLIP), Player(State.FLIP)],
-	                          [lambda o: x.transform(State.FLAP), lambda o: y.transform(State.FLOP)])
-	        )
-	    )
-	)
+    rules = System(
+        Group(
+            Selector(Player(ANY)),
+            Rules(
+                lambda x: ([Player(State.START)], [lambda o: o.transform(State.FLIP)]),
+                lambda x: ([Player(State.FLIP)], [lambda o: o.transform(State.FLAP)]),
+                lambda x: ([Player(State.FLAP)], [lambda o: o.transform(State.FLOP)]),
+                lambda x: ([Player(State.FLOP)], [lambda o: o.transform(State.FLIP)]),
+            )
+        ),
+        Group(
+            Selector(Player(ANY), Player(ANY)),
+            Rules(
+                lambda x, y: ([Player(State.FLIP), Player(State.FLIP)],
+                              [lambda o: o.transform(State.FLAP), lambda o: o.transform(State.FLOP)])
+            )
+        )
+    )
 
-	for objs, hist in simulation(objects, rules):
-		print(objs)
-		#print(hist)
-		print()
+    for objs, hist in simulation(objects, rules):
+        print(objs, hist.history)
+        print()
 
 
 if __name__ == "__main__":
-	main()
+    main()

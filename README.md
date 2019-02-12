@@ -20,7 +20,7 @@ Every rule that matches creates a new state, then the rules are evaluated again 
 Matching is performed with [Pampy](https://github.com/santinic/pampy/), a Pythonic pattern matching engine.
 
 
-## Writing Rules
+### Writing Rules
 
 You can skip this tutorial and jump straight to the example: [flipflapflop.py](examples/flipflapflop.py)
 
@@ -99,7 +99,7 @@ A visual representation of this system is:
 ![FLIP FLAP FLOP](.docs/flipflapflop.png)
 
 
-## More Complicated Games
+### More Complicated Games
 
 The Flip-Flap-Flop game above can be extended to support multiple players, with the rules above the state of the two players will never diverge - they will continue forever and will always be in the same state as each other. However, we can add an extra rule which matches them both after the initial transform from `START` to `FLIP` and sets them on divergent paths.
 
@@ -121,3 +121,46 @@ rules = System(
 ```
 
 By adding the extra rule this creates a divergent universe every time any two players are in the `FLIP` state, but because in the divergent universe no two players will be in the same state this limits its growth.
+
+## API
+
+### Run Simulation
+
+Individual steps of the simulation can be executed using `simulate`, and the simulation can be run recursively by calling `simulation`. Both functions take the same arguments:
+
+### Transform
+
+The transform function returns the new state for the object after performing the transform. It takes the object as the first argument.
+
+The following are equivalent for transforms:
+
+ * `lambda o: o`
+ * `None` 
+
+If `None` is specified as the transform nothing will happen to the object, it is the same as returning the object.
+
+Alternatively 
+
+```python
+class X:
+    def transform(self):
+        return self
+```
+
+which can then be specified as:
+
+```python
+Rules(
+    lambda x: ([...], [lambda o: o.transform()])
+)
+```
+
+or
+
+```python
+Rules(
+    lambda x: ([...], [x.transform])
+)
+```
+
+If the function returns `None` the same object will be emitted (after the transform is applied).
